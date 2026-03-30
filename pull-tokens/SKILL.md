@@ -1,8 +1,8 @@
 ---
-name: paper-tokens
+name: pull-tokens
 description: >
   Extract design tokens (colors, fonts, spacing) from Paper frames and map them against the project's token definitions.
-  Use when the user says paper-tokens, sync tokens, extract tokens, /paper-tokens, pull colors from paper,
+  Use when the user says pull tokens, sync tokens, extract tokens, /pull-tokens, pull colors from paper,
   update tokens from design, or wants to keep the design system aligned between Paper and code.
 ---
 
@@ -68,7 +68,7 @@ The user provides:
 
 Copy this folder to your AI coding agent's skills directory:
 
-- **Claude Code:** `~/.claude/skills/paper-tokens/`
-- **Cursor:** `~/.cursor/skills/paper-tokens/`
+- **Claude Code:** `~/.claude/skills/pull-tokens/`
+- **Cursor:** `~/.cursor/skills/pull-tokens/`
 
-Then use `/paper-tokens` or say "sync tokens from [frame name]."
+Then use `/pull-tokens` or say "pull tokens from [frame name]."

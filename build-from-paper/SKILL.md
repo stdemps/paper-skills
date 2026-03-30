@@ -1,8 +1,8 @@
 ---
-name: paper-match
+name: build-from-paper
 description: >
   Match code to a Paper design frame — pixel-perfect implementation from design.
-  Use when the user says paper-match, match paper, match design, code from paper, /paper-match,
+  Use when the user says build from paper, match paper, match design, code from paper, /build-from-paper,
   implement this frame, match this frame, or wants to update code to match a Paper design.
 ---
 
@@ -65,7 +65,7 @@ The user provides the **Paper frame name** to match. Optionally a code file/rout
 
 Copy this folder to your AI coding agent's skills directory:
 
-- **Claude Code:** `~/.claude/skills/paper-match/`
-- **Cursor:** `~/.cursor/skills/paper-match/`
+- **Claude Code:** `~/.claude/skills/build-from-paper/`
+- **Cursor:** `~/.cursor/skills/build-from-paper/`
 
-Then use `/paper-match` or say "match the [frame name] frame."
+Then use `/build-from-paper` or say "build from the [frame name] frame."

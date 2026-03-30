@@ -1,8 +1,8 @@
 ---
-name: paper-diff
+name: diff-with-paper
 description: >
   Compare a Paper design frame against the current code implementation and produce a structured diff report.
-  Use when the user says paper-diff, compare paper, diff design, design vs code, /paper-diff,
+  Use when the user says diff with paper, compare paper, diff design, design vs code, /diff-with-paper,
   check against design, where does paper differ, or wants to see gaps between design and code.
 ---
 
@@ -54,14 +54,14 @@ The user provides the **Paper frame name**. Optionally the code file/route — i
 - **Report only** — do not edit any code. The user decides what to act on.
 - **Show matches too** — the user needs to see what's already aligned.
 - **Map Paper values to project tokens** — so the fix is obvious from the report.
-- **If the user wants fixes** — suggest running `paper-match` next.
+- **If the user wants fixes** — suggest running `build-from-paper` next.
 - **Flag intentional deviations** — if a difference looks deliberate (e.g. responsive adaptation), note it.
 
 ## Installation
 
 Copy this folder to your AI coding agent's skills directory:
 
-- **Claude Code:** `~/.claude/skills/paper-diff/`
-- **Cursor:** `~/.cursor/skills/paper-diff/`
+- **Claude Code:** `~/.claude/skills/diff-with-paper/`
+- **Cursor:** `~/.cursor/skills/diff-with-paper/`
 
-Then use `/paper-diff` or say "compare [frame name] against code."
+Then use `/diff-with-paper` or say "diff [frame name] with Paper."
