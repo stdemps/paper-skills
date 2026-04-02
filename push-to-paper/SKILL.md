@@ -55,8 +55,8 @@ Paper's text renderer differs from browser inline flow in critical ways:
    ```
    <!-- Line with color change mid-line -->
    <div style="display: flex; flex-direction: row; align-items: baseline;">
-     <span style="color: blue;">Product design lead</span>
-     <span style="color: black;"> at KPMG UK,</span>
+     <span style="color: blue;">Welcome to</span>
+     <span style="color: black;"> our platform,</span>
    </div>
    ```
 
