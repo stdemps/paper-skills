@@ -34,6 +34,35 @@ Before writing HTML:
 3. Map Tailwind spacing to px (default 4 px unit): `1→4`, `2→8`, `3→12`, `4→16`, `5→20`, `6→24`, `8→32`, `16→64`, etc.; `min-h-11` → 44 px.
 4. Resolve theme colors: read semantic CSS (`hsl(var(--primary))`, …) from the project’s theme file (e.g. `:root` / `.dark`). Prefer **sampling computed styles from a running build** for final hex if Paper and the browser differ in HSL rounding.
 5. **Paper layout rules** (from `write_html`): use **flex** + **padding** + **gap**; **no** `display: grid`, **no** margin-driven layout for containers, **no** emoji icons — use SVG (e.g. Lucide paths) at the size implied by classes (`h-4 w-4` → 16 px).
+6. **Mixed-color inline text** (critical — see § Known Paper text constraints below).
+7. **Reference screenshot required:** before pushing, locate an existing screenshot of the target screen at the chosen breakpoint (check `screenshots/`, `e2e/`, Playwright artifacts, or project root for `.png` files). If none exists, start the dev server and capture one. You **need** this to determine exact text line breaks — do not guess.
+8. **Artboard height:** calculate from spec — sum all vertical padding + content element heights (line-height × estimated line count for text) + gaps/margins. Add ~5% buffer to avoid clipping. Adjust with `update_styles` after the first screenshot if content overflows.
+
+### Known Paper text constraints (verified)
+
+Paper's text renderer differs from browser inline flow in critical ways:
+
+1. **No inline text flow with mixed colors.** In a browser, `<span style="color:blue">word</span><span style="color:red">word</span>` inside a `<p>` flows as continuous inline text that wraps at word boundaries. In Paper, each `<span>` becomes a **separate block-level text node** with `flexShrink: 0`. They will **not** wrap mid-phrase like browser inline text.
+
+2. **`flex-wrap` on colored spans fails.** Wrapping a container of colored text spans with `flex-wrap: wrap` creates incorrect line breaks — each span wraps as an indivisible unit at span boundaries, not word boundaries. This produces visually wrong output (e.g., "Product design lead" alone on line 1 instead of continuing with surrounding text).
+
+3. **Solution — line-by-line flex rows:**
+   - Determine the **exact visual line breaks** from a reference screenshot at the target viewport width.
+   - Create one `flex-direction: row` container per visual line.
+   - Place colored text segments within each row as sibling text nodes.
+   - This gives precise control over where colors change and where lines break.
+
+   ```
+   <!-- Line with color change mid-line -->
+   <div style="display: flex; flex-direction: row; align-items: baseline;">
+     <span style="color: blue;">Product design lead</span>
+     <span style="color: black;"> at KPMG UK,</span>
+   </div>
+   ```
+
+4. **Text nodes have `flexShrink: 0` by default.** Wide text in a flex container can push siblings off-screen. If a multi-column layout contains long text, the text column will not shrink — constrain it with `overflow: hidden` and `minWidth: 0` on the parent, or avoid the multi-column layout at that breakpoint.
+
+5. **Single-color text blocks are fine.** If an entire paragraph is one color, use a single `<span>` or `<p>` — Paper handles single text nodes with natural word-wrapping correctly.
 
 ### Post-flight: Pixel QA checklist (mandatory)
 
@@ -67,12 +96,13 @@ Only then: `finish_working_on_nodes`.
 ## Workflow (Paper MCP)
 
 1. **Discover context:** `get_basic_info`; use `get_selection` / `get_tree_summary` to resolve **`targetNodeId`** for the parent of new content.
-2. **Pre-flight spec table** (pixel mode): as above.
-3. **Write incrementally:** `write_html` in **small chunks** (e.g. chrome → header → sections → footer). After **2–3 chunks**, visually checkpoint (`get_screenshot`): spacing, type hierarchy, contrast, alignment.
-4. **Modes:** Prefer **`insert-children`**; use **`replace`** only when the user asked to swap a specific node.
-5. **Layers:** Use sensible names (`layer-name` on roots where supported; mirror real regions: header, body scroll, list, footer).
-6. **Pixel QA:** run checklist; fix until pass.
-7. **Done:** `finish_working_on_nodes` when stable **and** QA passed.
+2. **Obtain reference screenshot:** find or capture a screenshot of the target screen at the chosen breakpoint. Search `screenshots/`, `e2e/`, project root for `.png` files. If none exist, start the dev server and capture one. This is **required** for determining text line breaks when the screen contains mixed-color headings or multi-line text.
+3. **Pre-flight spec table** (pixel mode): as above. Include HSL→hex conversions for all theme colors — document the math so values are verifiable.
+4. **Write incrementally:** `write_html` in **small chunks** (e.g. chrome → header → sections → footer). After **2–3 chunks**, visually checkpoint (`get_screenshot`): spacing, type hierarchy, contrast, alignment.
+5. **Modes:** Prefer **`insert-children`**; use **`replace`** only when the user asked to swap a specific node or to fix a broken chunk.
+6. **Layers:** Use sensible names (`layer-name` on roots where supported; mirror real regions: header, body scroll, list, footer).
+7. **Pixel QA:** run checklist; fix until pass.
+8. **Done:** `finish_working_on_nodes` when stable **and** QA passed.
 
 ## Source of truth (user must supply or you must locate)
 
@@ -112,7 +142,7 @@ Emit:
 
 ## Installation
 
-**Canonical source:** this repo — copy `push-to-paper/` to your agent skills directory, or vendor into an app repo under `.cursor/skills/push-to-paper/`.
+**Canonical repo:** [stdemps/paper-skills](https://github.com/stdemps/paper-skills) (or your fork) — copy `push-to-paper/` from there so everyone gets the same revision.
 
 ```bash
 # Claude Code
@@ -121,5 +151,7 @@ cp -r push-to-paper ~/.claude/skills/
 # Cursor
 cp -r push-to-paper ~/.cursor/skills/
 ```
+
+**Optional — vendoring in an app monorepo:** copy `push-to-paper/` to `.cursor/skills/push-to-paper/` in the project so the team pins a skill version in git.
 
 Then use `/push-to-paper` or say "push this screen to Paper."
