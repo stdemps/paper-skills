@@ -38,6 +38,14 @@ Before writing HTML:
 7. **Reference screenshot required:** before pushing, locate an existing screenshot of the target screen at the chosen breakpoint (check `screenshots/`, `e2e/`, Playwright artifacts, or project root for `.png` files). If none exists, start the dev server and capture one. You **need** this to determine exact text line breaks — do not guess.
 8. **Artboard height:** calculate from spec — sum all vertical padding + content element heights (line-height × estimated line count for text) + gaps/margins. Add ~5% buffer to avoid clipping. Adjust with `update_styles` after the first screenshot if content overflows.
 
+Example spec table (one row per logical block — every value traced to a class or a computed style):
+
+| Block | Source classes | fontSize / lineHeight / weight | padding | gap | radius | color | background |
+|---|---|---|---|---|---|---|---|
+| Root | `flex flex-col p-6 gap-4 max-w-md` | — | 24px | 16px | — | — | `#ffffff` (`--background`) |
+| Title | `text-2xl font-semibold tracking-tight` | 24px / 32px / 600 | — | — | — | `#0a0a0a` (`--foreground`) | — |
+| Primary CTA | `Button` default: `h-11 px-5 rounded-md` | 14px / 20px / 500 | 0 20px | 8px | 6px | `#fafafa` | `#2563eb` (`--primary`) |
+
 ### Known Paper text constraints (verified)
 
 Paper's text renderer differs from browser inline flow in critical ways:
@@ -128,6 +136,29 @@ Only then: `finish_working_on_nodes`.
 ## Handoff
 
 The user refines in Paper and may share the file back for **implementation alignment** — preserve clear layer names to make diffs obvious.
+
+End the turn with this report:
+
+```markdown
+Pushed "Settings" to Paper → artboard "Settings — code match (sm · 375×812)", frame "Spec from code — Settings".
+
+**Pixel QA:** 6 of 6 anchors within tolerance.
+**Fixed during QA:** CTA horizontal padding (set `paddingLeft`/`paddingRight` explicitly).
+**TBD — verify in code:** none.
+**Not reproduced:** the loading skeleton (a state, not in this breakpoint's default render).
+```
+
+If QA did not pass, say which anchors failed and by how much. Do not call `finish_working_on_nodes`, and do not describe the push as done.
+
+## Never
+
+- **Never call `finish_working_on_nodes` before the Pixel QA checklist passes.**
+- **Never guess text line breaks** — take them from a reference screenshot.
+- **Never invent copy, hex values, or entities.** Unknown text is `TBD — verify in code`.
+- **Never use emoji as icons, `display: grid`, or margin-driven layout** in the HTML you write to Paper.
+- **Never overwrite the user's existing frames.** Insert into a dedicated parent frame; use `replace` only when asked.
+- **Never keep calling Paper tools after a quota or rate-limit reply** — switch to paste mode.
+- **Never change the app's code.** This skill reads code and writes to Paper only.
 
 ---
 

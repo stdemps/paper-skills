@@ -63,7 +63,7 @@ The user provides the **Paper frame name** to match. Optionally a code file/rout
    - **No inline styles** unless the project already uses them or no token exists.
    - **Preserve component logic and behavior** — only change visual styling.
    - Work incrementally — small, reviewable changes, not full rewrites.
-   - **Accessible by default (WCAG 2.1 AA minimum)**:
+   - **Accessible by default (WCAG 2.2 AA minimum)**:
      - Use semantic HTML: `<main>`, `<section>`, `<nav>`, `<h1>`–`<h6>` (in order), `<button>`, `<a>`, `<label>`, `<input>` — not `<div>` for everything.
      - All images need descriptive `alt` text (derive from the Paper layer name or visible caption). Decorative images get `alt=""`.
      - Buttons and links must have accessible names. Icon-only buttons need `aria-label`.
@@ -93,15 +93,35 @@ The user provides the **Paper frame name** to match. Optionally a code file/rout
    - **Flag content overflow risks**: If card descriptions or headings could vary in length, flag to the user whether truncation (`line-clamp-*`) or overflow handling (`min-w-0` on flex children) is needed.
    - Flag any remaining gaps.
 
+## Build mode report
+
+When the edits are done, reply with this shape:
+
+```markdown
+Matched `PricingCard.tsx` to the "Pricing card — lg" frame.
+
+**Changed**
+- Card padding 16px → 24px (`p-4` → `p-6`)
+- CTA now uses `Button variant="default"` instead of a raw `<button>`
+
+**Checked:** light ✅ · dark ✅ · 375px ✅ (browser screenshot vs Paper screenshot)
+**Not matched:** badge colour `#1e1b4b` has no token — left as `bg-primary`. Want a new token?
+**Flags:** card title can overflow at 320px — add `line-clamp-2`?
+```
+
+If you could not take a browser screenshot, write "Checked: not verified in a browser — no dev server running" instead of ticks.
+
 ## Rules
 
+- **Never claim a pixel match you did not check** — a match means you compared a browser screenshot with the Paper screenshot this session.
+- **Never commit or push** — leave the edits in the working tree.
 - **Exact strings from Paper** — don't change copy unless it's clearly placeholder.
 - **Never invent tokens** — use what the project already has. Flag gaps to the user.
 - **Prefer existing components** — always use the project's UI components (Button, Badge, Card, etc.) over raw HTML elements. Match the design by selecting the right variant and overriding via `className`.
 - **Dark-mode safe colors** — never use hardcoded hex/rgba for backgrounds, text, or borders. Use CSS variable-based tokens that adapt to both modes. Only use inline color values for truly unique values with no token equivalent.
 - **Paper JSX is a reference, not copy-paste** — the `get_jsx` output provides structure and values but uses raw HTML and hardcoded colors. Always translate to project components and tokens.
 - **Responsive by default** — the Paper frame is one breakpoint, not the only layout. Use fluid sizing (`aspect-ratio`, `max-w-*`, responsive grid columns) so the output works from mobile to desktop without a separate mobile design.
-- **Accessible by default (WCAG 2.1 AA)** — semantic HTML, descriptive alt text, associated labels, 4.5:1 contrast ratio for text, visible focus states. Flag contrast failures to the user rather than shipping inaccessible output.
+- **Accessible by default (WCAG 2.2 AA)** — semantic HTML, descriptive alt text, associated labels, 4.5:1 contrast ratio for text, visible focus states. Flag contrast failures to the user rather than shipping inaccessible output.
 - **Interactive polish** — the design is static but production isn't. Add hover states and transitions to raw interactive elements. Existing components handle their own states.
 - **Preserve behavior** — this skill changes appearance, not functionality.
 - **Incremental edits** — small targeted changes, not rewrites.
